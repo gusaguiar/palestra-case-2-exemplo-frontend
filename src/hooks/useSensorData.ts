@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { SensorData, MLPrediction, Notification } from '@/types/sensor';
 
@@ -53,7 +54,7 @@ export const useSensorData = () => {
         id: `speed-${Date.now()}`,
         type: 'critical',
         title: 'Velocidade Excessiva',
-        message: `Velocidade rotacional de ${data.rotationalSpeed}rpm está muito alta. Risco de falha mecânica',
+        message: `Velocidade rotacional de ${data.rotationalSpeed}rpm está muito alta. Risco de falha mecânica`,
         timestamp: 'Agora',
         sensor: 'Encoder Rotacional'
       });
@@ -64,7 +65,7 @@ export const useSensorData = () => {
         id: `decouple-${Date.now()}`,
         type: 'critical',
         title: 'Desacoplamento Detectado',
-        message: `Alta velocidade (${data.rotationalSpeed}rpm) com baixo torque (${data.torque.toFixed(1)}Nm) indica possível desacoplamento',
+        message: `Alta velocidade (${data.rotationalSpeed}rpm) com baixo torque (${data.torque.toFixed(1)}Nm) indica possível desacoplamento`,
         timestamp: 'Agora',
         sensor: 'Sistema de Acoplamento'
       });
@@ -75,7 +76,7 @@ export const useSensorData = () => {
         id: `ml-warning-${Date.now()}`,
         type: 'info',
         title: 'Modelo Preditivo - Atenção',
-        message: `Sistema de ML detectou ${(prediction.probability * 100).toFixed(1)}% de probabilidade de falha',
+        message: `Sistema de ML detectou ${(prediction.probability * 100).toFixed(1)}% de probabilidade de falha`,
         timestamp: 'Agora',
         sensor: 'Sistema de ML'
       });
