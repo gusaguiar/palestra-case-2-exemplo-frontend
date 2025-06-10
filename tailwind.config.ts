@@ -28,11 +28,11 @@ export default {
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
-					dark: '#012030',
-					blue: '#13678A',
-					teal: '#45C4B0',
-					green: '#9AEBA3',
-					light: '#DAFDBA'
+					dark: '#014040',
+					teal: '#02735E',
+					green: '#03A678',
+					orange: '#F27405',
+					red: '#731702'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
