@@ -1,26 +1,26 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { SensorData } from '@/types/sensor';
-import { TrendingUp, Activity, Zap, Clock } from 'lucide-react';
+import { TrendingUp, Activity, Zap } from 'lucide-react';
 
 interface ChartsSectionProps {
   data: SensorData;
 }
 
 export const ChartsSection = ({ data }: ChartsSectionProps) => {
-  // Generate more realistic historical data with trends
   const generateHistoricalData = (currentValue: number, label: string, trend: 'stable' | 'increasing' | 'decreasing' = 'stable') => {
     const data = [];
     let baseValue = currentValue;
     
     for (let i = 23; i >= 0; i--) {
       if (trend === 'increasing') {
-        baseValue = currentValue - (i * 0.1);
+        baseValue = currentValue - (i * 0.05);
       } else if (trend === 'decreasing') {
-        baseValue = currentValue + (i * 0.08);
+        baseValue = currentValue + (i * 0.03);
       }
       
-      const variance = baseValue * 0.05;
+      const variance = baseValue * 0.02;
       const value = baseValue + (Math.random() - 0.5) * variance;
       
       data.push({
@@ -32,10 +32,9 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
     return data.reverse();
   };
 
-  const temperatureData = generateHistoricalData(data.processTemperature, 'temperature', 'increasing');
+  const temperatureData = generateHistoricalData(data.processTemperature, 'temperature', 'stable');
   const torqueData = generateHistoricalData(data.torque, 'torque', 'stable');
   const speedData = generateHistoricalData(data.rotationalSpeed, 'speed', 'stable');
-  const wearData = generateHistoricalData(data.toolWear, 'wear', 'increasing');
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -43,7 +42,7 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
         <div className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-slate-200">
           <p className="text-sm font-semibold text-slate-900">{`${label}`}</p>
           <p className="text-sm text-blue-600 font-medium">
-            {`${payload[0].value.toFixed(1)} ${payload[0].name === 'temperature' ? 'K' : payload[0].name === 'speed' ? 'rpm' : payload[0].name === 'torque' ? 'Nm' : 'min'}`}
+            {`${payload[0].value.toFixed(1)} ${payload[0].name === 'temperature' ? 'K' : payload[0].name === 'speed' ? 'rpm' : 'Nm'}`}
           </p>
         </div>
       );
@@ -61,13 +60,13 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Temperature Chart */}
-        <Card className="relative overflow-hidden bg-gradient-to-br from-blue-50/50 via-white to-blue-50/30 border border-blue-200/40 shadow-lg">
+        <Card className="relative overflow-hidden bg-gradient-to-br from-blue-50/70 via-white to-blue-50/30 border border-blue-200/50 shadow-lg">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold text-slate-900 flex items-center space-x-2">
-                <div className="p-1.5 rounded-lg bg-blue-100">
+                <div className="p-1.5 rounded-lg bg-blue-100/80">
                   <TrendingUp className="w-4 h-4 text-blue-600" />
                 </div>
                 <span>Temperatura do Processo</span>
@@ -83,7 +82,7 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
               <AreaChart data={temperatureData}>
                 <defs>
                   <linearGradient id="temperatureGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05}/>
                   </linearGradient>
                 </defs>
@@ -100,7 +99,7 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
-                  domain={['dataMin - 5', 'dataMax + 5']}
+                  domain={['dataMin - 1', 'dataMax + 1']}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Area 
@@ -110,7 +109,7 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                   fillOpacity={1} 
                   fill="url(#temperatureGradient)" 
                   strokeWidth={2.5}
-                  dot={{ fill: '#3b82f6', strokeWidth: 0, r: 3 }}
+                  dot={{ fill: '#3b82f6', strokeWidth: 0, r: 2 }}
                   activeDot={{ r: 4, stroke: '#3b82f6', strokeWidth: 2, fill: 'white' }}
                 />
               </AreaChart>
@@ -119,18 +118,18 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
         </Card>
 
         {/* Torque Chart */}
-        <Card className="relative overflow-hidden bg-gradient-to-br from-amber-50/50 via-white to-amber-50/30 border border-amber-200/40 shadow-lg">
+        <Card className="relative overflow-hidden bg-gradient-to-br from-violet-50/70 via-white to-violet-50/30 border border-violet-200/50 shadow-lg">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold text-slate-900 flex items-center space-x-2">
-                <div className="p-1.5 rounded-lg bg-amber-100">
-                  <Zap className="w-4 h-4 text-amber-600" />
+                <div className="p-1.5 rounded-lg bg-violet-100/80">
+                  <Zap className="w-4 h-4 text-violet-600" />
                 </div>
                 <span>Torque</span>
               </CardTitle>
               <div className="text-right">
                 <p className="text-xs text-slate-500">Atual</p>
-                <p className="text-sm font-bold text-amber-600">{data.torque.toFixed(1)} Nm</p>
+                <p className="text-sm font-bold text-violet-600">{data.torque.toFixed(1)} Nm</p>
               </div>
             </div>
           </CardHeader>
@@ -150,16 +149,16 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
-                  domain={['dataMin - 2', 'dataMax + 2']}
+                  domain={['dataMin - 5', 'dataMax + 5']}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Line 
                   type="monotone" 
                   dataKey="torque" 
-                  stroke="#f59e0b" 
+                  stroke="#7c3aed" 
                   strokeWidth={2.5}
-                  dot={{ fill: '#f59e0b', strokeWidth: 0, r: 3 }}
-                  activeDot={{ r: 4, stroke: '#f59e0b', strokeWidth: 2, fill: 'white' }}
+                  dot={{ fill: '#7c3aed', strokeWidth: 0, r: 2 }}
+                  activeDot={{ r: 4, stroke: '#7c3aed', strokeWidth: 2, fill: 'white' }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -167,11 +166,11 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
         </Card>
 
         {/* Speed Chart */}
-        <Card className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-emerald-50/30 border border-emerald-200/40 shadow-lg">
+        <Card className="relative overflow-hidden bg-gradient-to-br from-emerald-50/70 via-white to-emerald-50/30 border border-emerald-200/50 shadow-lg">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold text-slate-900 flex items-center space-x-2">
-                <div className="p-1.5 rounded-lg bg-emerald-100">
+                <div className="p-1.5 rounded-lg bg-emerald-100/80">
                   <Activity className="w-4 h-4 text-emerald-600" />
                 </div>
                 <span>Velocidade Rotacional</span>
@@ -187,7 +186,7 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
               <AreaChart data={speedData}>
                 <defs>
                   <linearGradient id="speedGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0.05}/>
                   </linearGradient>
                 </defs>
@@ -204,7 +203,7 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
-                  domain={['dataMin - 20', 'dataMax + 20']}
+                  domain={['dataMin - 100', 'dataMax + 100']}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Area 
@@ -214,58 +213,10 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                   fillOpacity={1} 
                   fill="url(#speedGradient)" 
                   strokeWidth={2.5}
-                  dot={{ fill: '#10b981', strokeWidth: 0, r: 3 }}
+                  dot={{ fill: '#10b981', strokeWidth: 0, r: 2 }}
                   activeDot={{ r: 4, stroke: '#10b981', strokeWidth: 2, fill: 'white' }}
                 />
               </AreaChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Tool Wear Chart */}
-        <Card className="relative overflow-hidden bg-gradient-to-br from-red-50/50 via-white to-red-50/30 border border-red-200/40 shadow-lg">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-bold text-slate-900 flex items-center space-x-2">
-                <div className="p-1.5 rounded-lg bg-red-100">
-                  <Clock className="w-4 h-4 text-red-600" />
-                </div>
-                <span>Desgaste da Ferramenta</span>
-              </CardTitle>
-              <div className="text-right">
-                <p className="text-xs text-slate-500">Atual</p>
-                <p className="text-sm font-bold text-red-600">{data.toolWear.toFixed(0)} min</p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={wearData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" strokeOpacity={0.5} />
-                <XAxis 
-                  dataKey="time" 
-                  stroke="#64748b" 
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis 
-                  stroke="#64748b" 
-                  fontSize={11}
-                  tickLine={false}
-                  axisLine={false}
-                  domain={[0, 'dataMax + 10']}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Line 
-                  type="monotone" 
-                  dataKey="wear" 
-                  stroke="#ef4444" 
-                  strokeWidth={2.5}
-                  dot={{ fill: '#ef4444', strokeWidth: 0, r: 3 }}
-                  activeDot={{ r: 4, stroke: '#ef4444', strokeWidth: 2, fill: 'white' }}
-                />
-              </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>

@@ -1,5 +1,5 @@
 
-import { Thermometer, Gauge, Clock, Wrench, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
+import { Thermometer, Gauge, Wrench, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SensorData } from '@/types/sensor';
@@ -15,8 +15,8 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
       value: `${data.airTemperature.toFixed(1)}`,
       unit: 'K',
       icon: Thermometer,
-      status: data.airTemperature > 305 ? 'warning' : 'healthy',
-      change: Math.random() > 0.5 ? '+2.1%' : '-0.8%',
+      status: data.airTemperature > 299.5 ? 'warning' : 'healthy',
+      change: Math.random() > 0.5 ? '+0.3%' : '-0.1%',
       trend: Math.random() > 0.5 ? 'up' : 'down',
       color: 'blue'
     },
@@ -25,8 +25,8 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
       value: `${data.processTemperature.toFixed(1)}`,
       unit: 'K',
       icon: Thermometer,
-      status: data.processTemperature > 315 ? 'critical' : 'healthy',
-      change: Math.random() > 0.5 ? '+1.4%' : '-2.1%',
+      status: data.processTemperature > 309.5 ? 'critical' : data.processTemperature > 309.0 ? 'warning' : 'healthy',
+      change: Math.random() > 0.5 ? '+0.2%' : '-0.1%',
       trend: Math.random() > 0.5 ? 'up' : 'down',
       color: 'orange'
     },
@@ -35,30 +35,20 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
       value: `${data.rotationalSpeed.toFixed(0)}`,
       unit: 'rpm',
       icon: Gauge,
-      status: data.rotationalSpeed > 1600 ? 'warning' : 'healthy',
-      change: Math.random() > 0.5 ? '-0.3%' : '+1.2%',
+      status: data.rotationalSpeed > 2000 ? 'critical' : data.rotationalSpeed > 1600 ? 'warning' : 'healthy',
+      change: Math.random() > 0.5 ? '-0.5%' : '+1.2%',
       trend: Math.random() > 0.5 ? 'up' : 'down',
-      color: 'green'
+      color: 'emerald'
     },
     {
       title: 'Torque',
       value: `${data.torque.toFixed(1)}`,
       unit: 'Nm',
       icon: Wrench,
-      status: data.torque > 45 ? 'critical' : 'healthy',
-      change: Math.random() > 0.5 ? '+2.8%' : '-1.5%',
+      status: data.torque > 60 ? 'critical' : data.torque > 50 ? 'warning' : 'healthy',
+      change: Math.random() > 0.5 ? '+1.8%' : '-0.8%',
       trend: Math.random() > 0.5 ? 'up' : 'down',
-      color: 'purple'
-    },
-    {
-      title: 'Desgaste Ferramenta',
-      value: `${data.toolWear.toFixed(0)}`,
-      unit: 'min',
-      icon: Clock,
-      status: data.toolWear > 200 ? 'critical' : data.toolWear > 150 ? 'warning' : 'healthy',
-      change: '+0.2%',
-      trend: 'up',
-      color: 'red'
+      color: 'violet'
     },
     {
       title: 'Status Máquina',
@@ -68,7 +58,7 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
       status: data.machineFailure ? 'critical' : 'healthy',
       change: '',
       trend: data.machineFailure ? 'down' : 'up',
-      color: 'slate'
+      color: data.machineFailure ? 'red' : 'emerald'
     }
   ];
 
@@ -76,45 +66,44 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
     switch (status) {
       case 'healthy':
         return {
-          badge: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+          badge: 'bg-emerald-50 text-emerald-700 border-emerald-200/60',
           text: 'Normal',
-          glow: 'shadow-emerald-100/50'
+          glow: 'shadow-emerald-100/40'
         };
       case 'warning':
         return {
-          badge: 'bg-amber-100 text-amber-700 border-amber-200',
+          badge: 'bg-amber-50 text-amber-700 border-amber-200/60',
           text: 'Atenção',
-          glow: 'shadow-amber-100/50'
+          glow: 'shadow-amber-100/40'
         };
       case 'critical':
         return {
-          badge: 'bg-red-100 text-red-700 border-red-200',
+          badge: 'bg-red-50 text-red-700 border-red-200/60',
           text: 'Crítico',
-          glow: 'shadow-red-100/50'
+          glow: 'shadow-red-100/40'
         };
       default:
         return {
-          badge: 'bg-slate-100 text-slate-700 border-slate-200',
+          badge: 'bg-slate-50 text-slate-700 border-slate-200/60',
           text: 'Indefinido',
-          glow: 'shadow-slate-100/50'
+          glow: 'shadow-slate-100/40'
         };
     }
   };
 
   const getColorConfig = (color: string) => {
     const configs: Record<string, string> = {
-      blue: 'from-blue-500/10 to-blue-600/5 border-blue-200/50',
-      orange: 'from-orange-500/10 to-orange-600/5 border-orange-200/50',
-      green: 'from-emerald-500/10 to-emerald-600/5 border-emerald-200/50',
-      purple: 'from-purple-500/10 to-purple-600/5 border-purple-200/50',
-      red: 'from-red-500/10 to-red-600/5 border-red-200/50',
-      slate: 'from-slate-500/10 to-slate-600/5 border-slate-200/50'
+      blue: 'from-blue-50/70 via-white to-blue-50/30 border-blue-200/50',
+      orange: 'from-orange-50/70 via-white to-orange-50/30 border-orange-200/50',
+      emerald: 'from-emerald-50/70 via-white to-emerald-50/30 border-emerald-200/50',
+      violet: 'from-violet-50/70 via-white to-violet-50/30 border-violet-200/50',
+      red: 'from-red-50/70 via-white to-red-50/30 border-red-200/50'
     };
-    return configs[color] || configs.slate;
+    return configs[color] || configs.emerald;
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4">
       {sensorConfig.map((sensor, index) => {
         const Icon = sensor.icon;
         const TrendIcon = sensor.trend === 'up' ? TrendingUp : TrendingDown;
@@ -157,7 +146,6 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
               </div>
             </CardContent>
             
-            {/* Subtle animation indicator */}
             <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-slate-300/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </Card>
         );

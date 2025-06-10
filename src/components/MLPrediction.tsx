@@ -19,9 +19,9 @@ export const MLPrediction = ({ prediction }: MLPredictionProps) => {
         return {
           icon: CheckCircle,
           color: 'text-emerald-600',
-          bgGradient: 'from-emerald-50 via-white to-emerald-50/30',
+          bgGradient: 'from-emerald-50/70 via-white to-emerald-50/30',
           borderColor: 'border-emerald-200/60',
-          badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+          badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200/60',
           message: 'Sistema Operando Normalmente',
           description: 'Todas as condições dentro dos parâmetros esperados'
         };
@@ -29,9 +29,9 @@ export const MLPrediction = ({ prediction }: MLPredictionProps) => {
         return {
           icon: TrendingUp,
           color: 'text-amber-600',
-          bgGradient: 'from-amber-50 via-white to-amber-50/30',
+          bgGradient: 'from-amber-50/70 via-white to-amber-50/30',
           borderColor: 'border-amber-200/60',
-          badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
+          badgeColor: 'bg-amber-50 text-amber-800 border-amber-200/60',
           message: 'Atenção: Monitoramento Intensivo',
           description: 'Detectadas variações que podem indicar problemas futuros'
         };
@@ -39,9 +39,9 @@ export const MLPrediction = ({ prediction }: MLPredictionProps) => {
         return {
           icon: AlertTriangle,
           color: 'text-red-600',
-          bgGradient: 'from-red-50 via-white to-red-50/30',
+          bgGradient: 'from-red-50/70 via-white to-red-50/30',
           borderColor: 'border-red-200/60',
-          badgeColor: 'bg-red-100 text-red-800 border-red-200',
+          badgeColor: 'bg-red-50 text-red-800 border-red-200/60',
           message: 'Alerta: Intervenção Recomendada',
           description: 'Alta probabilidade de falha detectada pelo modelo preditivo'
         };
@@ -49,9 +49,9 @@ export const MLPrediction = ({ prediction }: MLPredictionProps) => {
         return {
           icon: CheckCircle,
           color: 'text-slate-600',
-          bgGradient: 'from-slate-50 via-white to-slate-50/30',
+          bgGradient: 'from-slate-50/70 via-white to-slate-50/30',
           borderColor: 'border-slate-200/60',
-          badgeColor: 'bg-slate-100 text-slate-800 border-slate-200',
+          badgeColor: 'bg-slate-50 text-slate-800 border-slate-200/60',
           message: 'Status Indeterminado',
           description: 'Aguardando dados suficientes para análise'
         };
@@ -64,14 +64,13 @@ export const MLPrediction = ({ prediction }: MLPredictionProps) => {
 
   return (
     <Card className={`relative overflow-hidden bg-gradient-to-r ${config.bgGradient} backdrop-blur-sm border-2 ${config.borderColor} shadow-xl`}>
-      {/* Background pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_80%,rgba(120,119,198,0.3),transparent_50%)] opacity-20" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_80%,rgba(120,119,198,0.15),transparent_50%)] opacity-30" />
       
       <CardContent className="relative p-6">
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center space-x-4">
             <div className="relative">
-              <div className={`p-3 rounded-2xl bg-white/80 ${config.color} shadow-lg`}>
+              <div className={`p-3 rounded-2xl bg-white/90 ${config.color} shadow-lg`}>
                 <Icon className="w-6 h-6" />
               </div>
               <Brain className="absolute -top-1 -right-1 w-4 h-4 text-blue-600 bg-white rounded-full p-0.5" />
@@ -102,7 +101,6 @@ export const MLPrediction = ({ prediction }: MLPredictionProps) => {
                 value={probabilityPercent} 
                 className="h-2 bg-slate-200"
               />
-              {/* Custom gradient overlay */}
               <div 
                 className="absolute top-0 left-0 h-2 rounded-full bg-gradient-to-r from-emerald-500 via-amber-500 to-red-500 transition-all duration-500"
                 style={{ width: `${probabilityPercent}%` }}

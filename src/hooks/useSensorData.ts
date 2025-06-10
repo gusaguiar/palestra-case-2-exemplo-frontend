@@ -7,16 +7,15 @@ export const useSensorData = () => {
     udi: 'UDI-2024-001',
     productId: 'M14860',
     type: 'CNC Torno Industrial',
-    airTemperature: 298.1,
-    processTemperature: 308.6,
-    rotationalSpeed: 1551,
-    torque: 42.8,
-    toolWear: 0,
+    airTemperature: 298.2,
+    processTemperature: 308.7,
+    rotationalSpeed: 1408,
+    torque: 46.3,
     machineFailure: false
   });
 
   const [mlPrediction, setMlPrediction] = useState<MLPrediction>({
-    probability: 0.23,
+    probability: 0.15,
     status: 'healthy',
     factors: []
   });
@@ -26,7 +25,7 @@ export const useSensorData = () => {
       id: '1',
       type: 'warning',
       title: 'Variação Térmica Detectada',
-      message: 'Temperatura do processo apresentou oscilação de 4.2K nas últimas 2 horas',
+      message: 'Temperatura do processo apresentou oscilação de 2.1K nas últimas 2 horas',
       timestamp: 'Há 12 minutos',
       sensor: 'Sensor Térmico PT-100'
     },
@@ -41,134 +40,96 @@ export const useSensorData = () => {
     {
       id: '3',
       type: 'critical',
-      title: 'Desgaste Acelerado',
-      message: 'Taxa de desgaste da ferramenta 23% acima do esperado para este ciclo',
+      title: 'Anomalia Detectada',
+      message: 'Torque registrou pico de 65.7 Nm, indicando possível sobrecarga',
       timestamp: 'Há 1 hora',
-      sensor: 'Monitor de Desgaste'
+      sensor: 'Sensor de Torque'
     }
   ]);
 
-  // Simulate more realistic sensor variations with occasional anomalies
   useEffect(() => {
     const interval = setInterval(() => {
       setSensorData(prev => {
-        // Base variation factors
-        const tempVariation = (Math.random() - 0.5) * 1.5;
-        const speedVariation = (Math.random() - 0.5) * 30;
-        const torqueVariation = (Math.random() - 0.5) * 3;
+        // Casos normais: pequenas variações
+        let newAirTemp = 298.1 + (Math.random() * 0.9); // 298.1 - 299.0
+        let newProcessTemp = 308.5 + (Math.random() * 0.6); // 308.5 - 309.1
+        let newSpeed = 1400 + (Math.random() * 200); // 1400 - 1600
+        let newTorque = 35 + (Math.random() * 15); // 35 - 50
         
-        // Introduce occasional anomalies (15% chance)
-        const hasAnomaly = Math.random() < 0.15;
-        const anomalyFactor = hasAnomaly ? (Math.random() > 0.5 ? 1.8 : -1.8) : 1;
+        // 8% chance de anomalia (baseado nos seus dados)
+        const hasAnomaly = Math.random() < 0.08;
         
-        // More realistic sensor ranges and correlations
-        const newAirTemp = Math.max(295, Math.min(310, prev.airTemperature + tempVariation));
-        const newProcessTemp = Math.max(300, Math.min(325, prev.processTemperature + (tempVariation * 1.2) + (hasAnomaly ? anomalyFactor * 2 : 0)));
-        const newSpeed = Math.max(1400, Math.min(1800, prev.rotationalSpeed + speedVariation + (hasAnomaly ? anomalyFactor * 50 : 0)));
-        const newTorque = Math.max(35, Math.min(55, prev.torque + torqueVariation + (hasAnomaly ? anomalyFactor * 3 : 0)));
-        const newToolWear = Math.max(0, prev.toolWear + Math.random() * 0.08 + (hasAnomaly ? 0.15 : 0));
+        if (hasAnomaly) {
+          // Simular casos de falha
+          const anomalyType = Math.random();
+          if (anomalyType < 0.5) {
+            // Caso 1: Alta velocidade com baixo torque (como no exemplo 2861 rpm, 4.6 Nm)
+            newSpeed = 2500 + (Math.random() * 500); // 2500-3000
+            newTorque = 4 + (Math.random() * 3); // 4-7
+          } else {
+            // Caso 2: Alto torque (como no exemplo 65.7 Nm)
+            newTorque = 60 + (Math.random() * 10); // 60-70
+            newSpeed = 1350 + (Math.random() * 100); // 1350-1450
+          }
+        }
+
+        const machineFailure = newTorque > 60 || newSpeed > 2500 || newProcessTemp > 309.5;
 
         return {
           ...prev,
-          airTemperature: newAirTemp,
-          processTemperature: newProcessTemp,
-          rotationalSpeed: newSpeed,
-          torque: newTorque,
-          toolWear: newToolWear,
-          machineFailure: newToolWear > 250 || newProcessTemp > 320 || newTorque > 50
+          airTemperature: Math.max(297, Math.min(301, newAirTemp)),
+          processTemperature: Math.max(307, Math.min(311, newProcessTemp)),
+          rotationalSpeed: Math.max(1300, Math.min(3000, newSpeed)),
+          torque: Math.max(3, Math.min(70, newTorque)),
+          machineFailure
         };
       });
 
-      // Update ML prediction with more sophisticated logic
       setMlPrediction(prev => {
         setSensorData(currentData => {
-          // Risk factors calculation
           let riskScore = 0;
           const factors: string[] = [];
 
-          // Temperature risk
-          if (currentData.processTemperature > 315) {
+          // Análise baseada nos dados reais
+          if (currentData.processTemperature > 309.0) {
             riskScore += 0.25;
             factors.push('Temperatura elevada');
           }
-          if (currentData.airTemperature > 305) {
-            riskScore += 0.15;
-            factors.push('Aquecimento ambiente');
-          }
-
-          // Mechanical stress risk
-          if (currentData.torque > 48) {
-            riskScore += 0.30;
+          
+          if (currentData.torque > 55) {
+            riskScore += 0.40;
             factors.push('Sobrecarga mecânica');
           }
-          if (currentData.rotationalSpeed > 1650) {
-            riskScore += 0.20;
+          
+          if (currentData.rotationalSpeed > 2000) {
+            riskScore += 0.35;
             factors.push('Velocidade excessiva');
           }
 
-          // Wear risk
-          if (currentData.toolWear > 180) {
-            riskScore += 0.35;
-            factors.push('Desgaste avançado');
+          if (currentData.torque < 10 && currentData.rotationalSpeed > 2000) {
+            riskScore += 0.30;
+            factors.push('Desacoplamento detectado');
           }
 
-          // Add some randomness to simulate ML uncertainty
-          riskScore += (Math.random() - 0.5) * 0.1;
           riskScore = Math.max(0, Math.min(1, riskScore));
 
           let status: 'healthy' | 'warning' | 'critical' = 'healthy';
-          if (riskScore > 0.75) {
+          if (riskScore > 0.65) {
             status = 'critical';
-          } else if (riskScore > 0.40) {
+          } else if (riskScore > 0.35) {
             status = 'warning';
           }
 
           return currentData;
         });
 
-        // Calculate final risk based on current sensor state
-        let finalRisk = 0;
-        const finalFactors: string[] = [];
-
-        // Recalculate with current data
-        setSensorData(currentData => {
-          if (currentData.processTemperature > 315) {
-            finalRisk += 0.25;
-            finalFactors.push('Temperatura elevada');
-          }
-          if (currentData.torque > 48) {
-            finalRisk += 0.30;
-            finalFactors.push('Sobrecarga mecânica');
-          }
-          if (currentData.toolWear > 180) {
-            finalRisk += 0.35;
-            finalFactors.push('Desgaste avançado');
-          }
-          if (currentData.rotationalSpeed > 1650) {
-            finalRisk += 0.20;
-            finalFactors.push('Velocidade excessiva');
-          }
-
-          finalRisk += (Math.random() - 0.5) * 0.08;
-          finalRisk = Math.max(0, Math.min(1, finalRisk));
-
-          return currentData;
-        });
-
-        let finalStatus: 'healthy' | 'warning' | 'critical' = 'healthy';
-        if (finalRisk > 0.75) {
-          finalStatus = 'critical';
-        } else if (finalRisk > 0.40) {
-          finalStatus = 'warning';
-        }
-
         return {
-          probability: finalRisk,
-          status: finalStatus,
-          factors: finalFactors
+          probability: Math.random() > 0.7 ? Math.random() * 0.3 : Math.random() * 0.15,
+          status: Math.random() > 0.85 ? 'warning' : 'healthy',
+          factors: Math.random() > 0.6 ? ['Oscilação térmica'] : []
         };
       });
-    }, 4000); // Update every 4 seconds for more dynamic feel
+    }, 3500);
 
     return () => clearInterval(interval);
   }, []);

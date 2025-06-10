@@ -7,7 +7,6 @@ export interface SensorData {
   processTemperature: number; // [K]
   rotationalSpeed: number; // [rpm]
   torque: number; // [Nm]
-  toolWear: number; // [min]
   machineFailure: boolean;
 }
 
