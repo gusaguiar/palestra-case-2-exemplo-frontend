@@ -121,7 +121,7 @@ export const useSensorData = () => {
           machineFailure
         };
       });
-    }, 3500);
+    }, 30000); // Mudou de 3500ms para 30000ms (30 segundos)
 
     return () => clearInterval(interval);
   }, []);

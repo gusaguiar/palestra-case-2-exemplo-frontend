@@ -20,36 +20,57 @@ interface HistoricalDataPoint {
 export const ChartsSection = ({ data }: ChartsSectionProps) => {
   const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[]>([]);
   const lastDataRef = useRef<SensorData | null>(null);
-  const timeCounterRef = useRef(0);
+  const intervalCountRef = useRef(0);
 
-  // Função para formatar tempo no eixo X
+  // Função para formatar tempo no eixo X (a cada 30s)
   const formatTime = (tickItem: string) => {
     if (tickItem === 'Agora') return 'Agora';
+    if (tickItem.includes('min')) {
+      const minutes = parseInt(tickItem);
+      return `${minutes}m`;
+    }
+    if (tickItem.includes('s')) {
+      const seconds = parseInt(tickItem);
+      return `${seconds}s`;
+    }
     return tickItem;
   };
 
   // Função para formatar valores do eixo Y com unidades
-  const formatTemperature = (value: number) => `${value.toFixed(0)}K`;
-  const formatTorque = (value: number) => `${value.toFixed(0)}Nm`;
-  const formatSpeed = (value: number) => `${(value/1000).toFixed(1)}k rpm`;
+  const formatTemperature = (value: number) => `${value.toFixed(1)}K`;
+  const formatTorque = (value: number) => `${value.toFixed(1)}Nm`;
+  const formatSpeed = (value: number) => `${(value/1000).toFixed(1)}k`;
 
-  // Inicializar dados históricos na primeira renderização
+  // Inicializar dados históricos na primeira renderização (15 minutos = 30 pontos a cada 30s)
   useEffect(() => {
     if (historicalData.length === 0) {
       const initialData: HistoricalDataPoint[] = [];
       
-      // Gerar 23 pontos históricos iniciais
-      for (let i = 23; i >= 1; i--) {
-        const baseTemp = data.processTemperature + (Math.random() - 0.5) * 0.5;
-        const baseTorque = data.torque + (Math.random() - 0.5) * 2;
-        const baseSpeed = data.rotationalSpeed + (Math.random() - 0.5) * 50;
+      // Gerar 29 pontos históricos iniciais (14.5 minutos)
+      for (let i = 29; i >= 1; i--) {
+        const seconds = i * 30;
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        
+        let timeLabel;
+        if (minutes > 0 && remainingSeconds === 0) {
+          timeLabel = `${minutes}min`;
+        } else if (minutes > 0) {
+          timeLabel = `${minutes}m${remainingSeconds}s`;
+        } else {
+          timeLabel = `${remainingSeconds}s`;
+        }
+        
+        const baseTemp = data.processTemperature + (Math.random() - 0.5) * 0.3;
+        const baseTorque = data.torque + (Math.random() - 0.5) * 1.5;
+        const baseSpeed = data.rotationalSpeed + (Math.random() - 0.5) * 30;
         
         initialData.push({
-          time: `${i}h`,
-          temperature: Math.max(307, Math.min(311, baseTemp)),
-          torque: Math.max(3, Math.min(70, baseTorque)),
-          speed: Math.max(1300, Math.min(3000, baseSpeed)),
-          timestamp: Date.now() - (i * 3600000) // 1 hora atrás por ponto
+          time: timeLabel,
+          temperature: Math.max(307.5, Math.min(310.5, baseTemp)),
+          torque: Math.max(5, Math.min(65, baseTorque)),
+          speed: Math.max(1350, Math.min(2800, baseSpeed)),
+          timestamp: Date.now() - (seconds * 1000)
         });
       }
       
@@ -64,19 +85,19 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
       
       setHistoricalData(initialData);
       lastDataRef.current = data;
-      timeCounterRef.current = 0;
+      intervalCountRef.current = 0;
     }
   }, [data, historicalData.length]);
 
-  // Adicionar novos pontos quando os dados mudam
+  // Adicionar novos pontos a cada mudança significativa nos dados
   useEffect(() => {
     if (!lastDataRef.current || historicalData.length === 0) return;
 
     // Verificar se os dados mudaram significativamente
     const hasSignificantChange = 
-      Math.abs(data.processTemperature - lastDataRef.current.processTemperature) > 0.1 ||
-      Math.abs(data.torque - lastDataRef.current.torque) > 0.5 ||
-      Math.abs(data.rotationalSpeed - lastDataRef.current.rotationalSpeed) > 10;
+      Math.abs(data.processTemperature - lastDataRef.current.processTemperature) > 0.05 ||
+      Math.abs(data.torque - lastDataRef.current.torque) > 0.3 ||
+      Math.abs(data.rotationalSpeed - lastDataRef.current.rotationalSpeed) > 5;
 
     if (hasSignificantChange) {
       setHistoricalData(prevData => {
@@ -86,10 +107,25 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
         if (newData[newData.length - 1]?.time === 'Agora') {
           const lastPoint = newData.pop()!;
           // Converter o último ponto para um ponto histórico
-          timeCounterRef.current++;
+          intervalCountRef.current++;
+          const seconds = intervalCountRef.current * 30;
+          
+          let timeLabel;
+          if (seconds < 60) {
+            timeLabel = `${seconds}s`;
+          } else {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            if (remainingSeconds === 0) {
+              timeLabel = `${minutes}min`;
+            } else {
+              timeLabel = `${minutes}m${remainingSeconds}s`;
+            }
+          }
+          
           newData.push({
             ...lastPoint,
-            time: timeCounterRef.current === 1 ? '1min' : `${timeCounterRef.current}min`
+            time: timeLabel
           });
         }
         
@@ -102,8 +138,8 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
           timestamp: Date.now()
         });
         
-        // Manter apenas os últimos 24 pontos
-        return newData.slice(-24);
+        // Manter apenas os últimos 30 pontos (15 minutos)
+        return newData.slice(-30);
       });
       
       lastDataRef.current = data;
@@ -145,7 +181,7 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
         <h2 className="text-lg font-bold text-slate-900">Tendências Históricas</h2>
         <div className="flex items-center space-x-2 text-xs text-slate-500">
           <Activity className="w-4 h-4" />
-          <span>Últimas 24 horas • Atualização automática</span>
+          <span>Últimos 15 minutos • Atualização a cada 30s</span>
         </div>
       </div>
       
@@ -179,18 +215,18 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                 <XAxis 
                   dataKey="time" 
                   stroke="#64748b" 
-                  fontSize={10} 
+                  fontSize={9} 
                   tickLine={false}
                   axisLine={false}
-                  interval="preserveStartEnd"
+                  interval={2}
                   tickFormatter={formatTime}
                 />
                 <YAxis 
                   stroke="#64748b" 
-                  fontSize={10}
+                  fontSize={9}
                   tickLine={false}
                   axisLine={false}
-                  domain={['dataMin - 0.5', 'dataMax + 0.5']}
+                  domain={['dataMin - 0.2', 'dataMax + 0.2']}
                   tickFormatter={formatTemperature}
                 />
                 <Tooltip content={<CustomTooltip />} />
@@ -200,9 +236,9 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                   stroke="#3b82f6" 
                   fillOpacity={1} 
                   fill="url(#temperatureGradient)" 
-                  strokeWidth={2.5}
-                  dot={{ fill: '#3b82f6', strokeWidth: 0, r: 2 }}
-                  activeDot={{ r: 4, stroke: '#3b82f6', strokeWidth: 2, fill: 'white' }}
+                  strokeWidth={2}
+                  dot={{ fill: '#3b82f6', strokeWidth: 0, r: 1.5 }}
+                  activeDot={{ r: 3, stroke: '#3b82f6', strokeWidth: 2, fill: 'white' }}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -232,18 +268,18 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                 <XAxis 
                   dataKey="time" 
                   stroke="#64748b" 
-                  fontSize={10}
+                  fontSize={9}
                   tickLine={false}
                   axisLine={false}
-                  interval="preserveStartEnd"
+                  interval={2}
                   tickFormatter={formatTime}
                 />
                 <YAxis 
                   stroke="#64748b" 
-                  fontSize={10}
+                  fontSize={9}
                   tickLine={false}
                   axisLine={false}
-                  domain={['dataMin - 2', 'dataMax + 2']}
+                  domain={['dataMin - 1', 'dataMax + 1']}
                   tickFormatter={formatTorque}
                 />
                 <Tooltip content={<CustomTooltip />} />
@@ -251,9 +287,9 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                   type="monotone" 
                   dataKey="torque" 
                   stroke="#7c3aed" 
-                  strokeWidth={2.5}
-                  dot={{ fill: '#7c3aed', strokeWidth: 0, r: 2 }}
-                  activeDot={{ r: 4, stroke: '#7c3aed', strokeWidth: 2, fill: 'white' }}
+                  strokeWidth={2}
+                  dot={{ fill: '#7c3aed', strokeWidth: 0, r: 1.5 }}
+                  activeDot={{ r: 3, stroke: '#7c3aed', strokeWidth: 2, fill: 'white' }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -289,18 +325,18 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                 <XAxis 
                   dataKey="time" 
                   stroke="#64748b" 
-                  fontSize={10}
+                  fontSize={9}
                   tickLine={false}
                   axisLine={false}
-                  interval="preserveStartEnd"
+                  interval={2}
                   tickFormatter={formatTime}
                 />
                 <YAxis 
                   stroke="#64748b" 
-                  fontSize={10}
+                  fontSize={9}
                   tickLine={false}
                   axisLine={false}
-                  domain={['dataMin - 50', 'dataMax + 50']}
+                  domain={['dataMin - 25', 'dataMax + 25']}
                   tickFormatter={formatSpeed}
                 />
                 <Tooltip content={<CustomTooltip />} />
@@ -310,9 +346,9 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                   stroke="#10b981" 
                   fillOpacity={1} 
                   fill="url(#speedGradient)" 
-                  strokeWidth={2.5}
-                  dot={{ fill: '#10b981', strokeWidth: 0, r: 2 }}
-                  activeDot={{ r: 4, stroke: '#10b981', strokeWidth: 2, fill: 'white' }}
+                  strokeWidth={2}
+                  dot={{ fill: '#10b981', strokeWidth: 0, r: 1.5 }}
+                  activeDot={{ r: 3, stroke: '#10b981', strokeWidth: 2, fill: 'white' }}
                 />
               </AreaChart>
             </ResponsiveContainer>
