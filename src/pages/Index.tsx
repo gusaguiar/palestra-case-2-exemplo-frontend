@@ -12,10 +12,10 @@ const Index = () => {
   const { sensorData, mlPrediction, notifications } = useSensorData();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-slate-50">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-pale/10 via-transparent to-blue-ocean/5 pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(1,32,48,0.03)_1px,transparent_0)] [background-size:24px_24px] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-slate-100/50 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(100,116,139,0.15)_1px,transparent_0)] [background-size:24px_24px] pointer-events-none" />
 
       {/* Header */}
       <DashboardHeader 
