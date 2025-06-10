@@ -1,5 +1,5 @@
 
-import { Bell, Activity, Settings } from 'lucide-react';
+import { Bell, Activity, Settings, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -10,38 +10,44 @@ interface DashboardHeaderProps {
 
 export const DashboardHeader = ({ onNotificationsClick, notificationCount }: DashboardHeaderProps) => {
   return (
-    <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-40">
-      <div className="container mx-auto px-6 py-4">
+    <header className="relative bg-white/95 backdrop-blur-md border-b border-slate-200/60 sticky top-0 z-40 shadow-sm">
+      <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-              <Activity className="w-5 h-5" />
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center shadow-lg">
+                <Activity className="w-5 h-5 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">Industrial Dashboard</h1>
-              <p className="text-sm text-slate-600">Sistema de Monitoramento de Sensores</p>
+              <h1 className="text-xl font-bold text-slate-900 tracking-tight">MonitorHub</h1>
+              <p className="text-xs text-slate-500 font-medium">Sistema Industrial • Tempo Real</p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={onNotificationsClick}
-              className="relative"
+              className="relative hover:bg-slate-100/80 transition-all duration-200"
             >
-              <Bell className="w-5 h-5" />
+              <Bell className="w-4 h-4 text-slate-600" />
               {notificationCount > 0 && (
                 <Badge 
                   variant="destructive" 
-                  className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                  className="absolute -top-1 -right-1 h-4 w-4 rounded-full p-0 flex items-center justify-center text-[10px] font-bold shadow-md"
                 >
-                  {notificationCount}
+                  {notificationCount > 9 ? '9+' : notificationCount}
                 </Badge>
               )}
             </Button>
-            <Button variant="ghost" size="sm">
-              <Settings className="w-5 h-5" />
+            <Button variant="ghost" size="sm" className="hover:bg-slate-100/80 transition-all duration-200">
+              <Settings className="w-4 h-4 text-slate-600" />
+            </Button>
+            <Button variant="ghost" size="sm" className="hover:bg-slate-100/80 transition-all duration-200 lg:hidden">
+              <Menu className="w-4 h-4 text-slate-600" />
             </Button>
           </div>
         </div>

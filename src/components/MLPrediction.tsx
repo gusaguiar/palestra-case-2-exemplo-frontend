@@ -1,5 +1,5 @@
 
-import { AlertTriangle, CheckCircle, TrendingUp } from 'lucide-react';
+import { AlertTriangle, CheckCircle, TrendingUp, Brain, Zap } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -18,75 +18,113 @@ export const MLPrediction = ({ prediction }: MLPredictionProps) => {
       case 'healthy':
         return {
           icon: CheckCircle,
-          color: 'text-green-600',
-          bgColor: 'bg-green-50 border-green-200',
-          badgeColor: 'bg-green-100 text-green-800',
-          message: 'Sistema Operando Normalmente'
+          color: 'text-emerald-600',
+          bgGradient: 'from-emerald-50 via-white to-emerald-50/30',
+          borderColor: 'border-emerald-200/60',
+          badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+          message: 'Sistema Operando Normalmente',
+          description: 'Todas as condições dentro dos parâmetros esperados'
         };
       case 'warning':
         return {
           icon: TrendingUp,
-          color: 'text-yellow-600',
-          bgColor: 'bg-yellow-50 border-yellow-200',
-          badgeColor: 'bg-yellow-100 text-yellow-800',
-          message: 'Atenção: Risco Moderado de Falha'
+          color: 'text-amber-600',
+          bgGradient: 'from-amber-50 via-white to-amber-50/30',
+          borderColor: 'border-amber-200/60',
+          badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
+          message: 'Atenção: Monitoramento Intensivo',
+          description: 'Detectadas variações que podem indicar problemas futuros'
         };
       case 'critical':
         return {
           icon: AlertTriangle,
           color: 'text-red-600',
-          bgColor: 'bg-red-50 border-red-200',
-          badgeColor: 'bg-red-100 text-red-800',
-          message: 'Alerta: Alto Risco de Falha'
+          bgGradient: 'from-red-50 via-white to-red-50/30',
+          borderColor: 'border-red-200/60',
+          badgeColor: 'bg-red-100 text-red-800 border-red-200',
+          message: 'Alerta: Intervenção Recomendada',
+          description: 'Alta probabilidade de falha detectada pelo modelo preditivo'
         };
       default:
         return {
           icon: CheckCircle,
-          color: 'text-gray-600',
-          bgColor: 'bg-gray-50 border-gray-200',
-          badgeColor: 'bg-gray-100 text-gray-800',
-          message: 'Status Desconhecido'
+          color: 'text-slate-600',
+          bgGradient: 'from-slate-50 via-white to-slate-50/30',
+          borderColor: 'border-slate-200/60',
+          badgeColor: 'bg-slate-100 text-slate-800 border-slate-200',
+          message: 'Status Indeterminado',
+          description: 'Aguardando dados suficientes para análise'
         };
     }
   };
 
   const config = getStatusConfig();
   const Icon = config.icon;
+  const probabilityPercent = prediction.probability * 100;
 
   return (
-    <Card className={`${config.bgColor} border-2 shadow-lg`}>
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <Icon className={`w-8 h-8 ${config.color}`} />
+    <Card className={`relative overflow-hidden bg-gradient-to-r ${config.bgGradient} backdrop-blur-sm border-2 ${config.borderColor} shadow-xl`}>
+      {/* Background pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_80%,rgba(120,119,198,0.3),transparent_50%)] opacity-20" />
+      
+      <CardContent className="relative p-6">
+        <div className="flex items-start justify-between mb-6">
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <div className={`p-3 rounded-2xl bg-white/80 ${config.color} shadow-lg`}>
+                <Icon className="w-6 h-6" />
+              </div>
+              <Brain className="absolute -top-1 -right-1 w-4 h-4 text-blue-600 bg-white rounded-full p-0.5" />
+            </div>
             <div>
-              <h3 className="text-xl font-bold text-slate-800">{config.message}</h3>
-              <p className="text-sm text-slate-600">Predição ML baseada em dados atuais</p>
+              <h2 className="text-xl font-bold text-slate-900 mb-1">{config.message}</h2>
+              <p className="text-sm text-slate-600 max-w-md">{config.description}</p>
             </div>
           </div>
-          <Badge className={config.badgeColor}>
-            Probabilidade: {(prediction.probability * 100).toFixed(1)}%
-          </Badge>
+          
+          <div className="text-right space-y-2">
+            <Badge className={`${config.badgeColor} shadow-sm font-semibold px-3 py-1`}>
+              <Zap className="w-3 h-3 mr-1" />
+              {probabilityPercent.toFixed(1)}% risco
+            </Badge>
+            <p className="text-xs text-slate-500 font-medium">Análise ML em tempo real</p>
+          </div>
         </div>
 
         <div className="space-y-4">
-          <div>
-            <div className="flex justify-between text-sm text-slate-600 mb-2">
-              <span>Risco de Falha</span>
-              <span>{(prediction.probability * 100).toFixed(1)}%</span>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-semibold text-slate-700">Probabilidade de Falha</span>
+              <span className="text-sm font-bold text-slate-900">{probabilityPercent.toFixed(1)}%</span>
             </div>
-            <Progress 
-              value={prediction.probability * 100} 
-              className="h-3"
-            />
+            <div className="relative">
+              <Progress 
+                value={probabilityPercent} 
+                className="h-2 bg-slate-200"
+              />
+              {/* Custom gradient overlay */}
+              <div 
+                className="absolute top-0 left-0 h-2 rounded-full bg-gradient-to-r from-emerald-500 via-amber-500 to-red-500 transition-all duration-500"
+                style={{ width: `${probabilityPercent}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-xs text-slate-500 font-medium">
+              <span>Baixo Risco</span>
+              <span>Risco Moderado</span>
+              <span>Alto Risco</span>
+            </div>
           </div>
 
           {prediction.factors.length > 0 && (
-            <div>
-              <p className="text-sm font-medium text-slate-700 mb-2">Principais Fatores de Risco:</p>
+            <div className="pt-2 border-t border-slate-200/60">
+              <p className="text-sm font-semibold text-slate-700 mb-3">Principais Indicadores de Risco:</p>
               <div className="flex flex-wrap gap-2">
                 {prediction.factors.map((factor, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
+                  <Badge 
+                    key={index} 
+                    variant="outline" 
+                    className="text-xs font-medium bg-white/60 border-slate-300/60 text-slate-700 hover:bg-white/80 transition-colors"
+                  >
                     {factor}
                   </Badge>
                 ))}

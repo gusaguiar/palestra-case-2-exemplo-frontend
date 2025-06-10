@@ -12,7 +12,11 @@ const Index = () => {
   const { sensorData, mlPrediction, notifications } = useSensorData();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-slate-50">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-slate-100/50 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(100,116,139,0.15)_1px,transparent_0)] [background-size:24px_24px] pointer-events-none" />
+
       {/* Header */}
       <DashboardHeader 
         onNotificationsClick={() => setSidebarOpen(true)}
@@ -20,17 +24,15 @@ const Index = () => {
       />
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        <div className="space-y-8">
-          {/* ML Prediction Banner */}
-          <MLPrediction prediction={mlPrediction} />
+      <main className="relative container mx-auto px-4 py-6 space-y-6">
+        {/* ML Prediction Banner */}
+        <MLPrediction prediction={mlPrediction} />
 
-          {/* Sensor Cards Grid */}
-          <SensorCards data={sensorData} />
+        {/* Sensor Cards Grid */}
+        <SensorCards data={sensorData} />
 
-          {/* Charts Section */}
-          <ChartsSection data={sensorData} />
-        </div>
+        {/* Charts Section */}
+        <ChartsSection data={sensorData} />
       </main>
 
       {/* Notifications Sidebar */}
