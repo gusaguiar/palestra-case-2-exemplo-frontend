@@ -21,7 +21,7 @@ export const DashboardHeader = ({ onNotificationsClick, notificationCount }: Das
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900 tracking-tight">MonitorHub</h1>
+              <h1 className="text-xl font-bold text-slate-900 tracking-tight">Exemplo de Interface - Case MLClassifier</h1>
               <p className="text-xs text-slate-500 font-medium">Sistema Industrial • Tempo Real</p>
             </div>
           </div>
