@@ -64,11 +64,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				// Custom palette colors
-				'navy-dark': 'hsl(var(--navy-dark))',
-				'blue-ocean': 'hsl(var(--blue-ocean))',
-				'teal-bright': 'hsl(var(--teal-bright))',
-				'green-light': 'hsl(var(--green-light))',
-				'green-pale': 'hsl(var(--green-pale))'
+				'navy-dark': '#012030',
+				'blue-ocean': '#13678A',
+				'teal-bright': '#45C4B0',
+				'green-light': '#9AEBA3',
+				'green-pale': '#DAFDBA'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

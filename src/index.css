@@ -3,11 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
-
 @layer base {
   :root {
-    --background: 218 253 186; /* #DAFDBA */
+    --background: 255 255 255;
     --foreground: 1 32 48; /* #012030 */
 
     --card: 255 255 255;
@@ -17,36 +15,36 @@
     --popover-foreground: 1 32 48; /* #012030 */
 
     --primary: 19 103 138; /* #13678A */
-    --primary-foreground: 218 253 186; /* #DAFDBA */
+    --primary-foreground: 255 255 255;
 
     --secondary: 69 196 176; /* #45C4B0 */
     --secondary-foreground: 1 32 48; /* #012030 */
 
-    --muted: 154 235 163; /* #9AEBA3 */
-    --muted-foreground: 1 32 48; /* #012030 */
+    --muted: 240 244 248;
+    --muted-foreground: 100 116 139;
 
     --accent: 69 196 176; /* #45C4B0 */
     --accent-foreground: 1 32 48; /* #012030 */
 
-    --destructive: 220 38 38;
+    --destructive: 239 68 68;
     --destructive-foreground: 255 255 255;
 
-    --border: 154 235 163; /* #9AEBA3 */
-    --input: 154 235 163; /* #9AEBA3 */
+    --border: 226 232 240;
+    --input: 226 232 240;
     --ring: 19 103 138; /* #13678A */
 
     --radius: 0.5rem;
 
-    --sidebar-background: 218 253 186; /* #DAFDBA */
+    --sidebar-background: 255 255 255;
     --sidebar-foreground: 1 32 48; /* #012030 */
     --sidebar-primary: 19 103 138; /* #13678A */
-    --sidebar-primary-foreground: 218 253 186; /* #DAFDBA */
-    --sidebar-accent: 154 235 163; /* #9AEBA3 */
+    --sidebar-primary-foreground: 255 255 255;
+    --sidebar-accent: 240 244 248;
     --sidebar-accent-foreground: 1 32 48; /* #012030 */
-    --sidebar-border: 69 196 176; /* #45C4B0 */
+    --sidebar-border: 226 232 240;
     --sidebar-ring: 19 103 138; /* #13678A */
 
-    /* Custom colors for the new palette */
+    /* Custom colors for the palette */
     --navy-dark: 1 32 48; /* #012030 */
     --blue-ocean: 19 103 138; /* #13678A */
     --teal-bright: 69 196 176; /* #45C4B0 */
@@ -56,40 +54,40 @@
 
   .dark {
     --background: 1 32 48; /* #012030 */
-    --foreground: 218 253 186; /* #DAFDBA */
+    --foreground: 255 255 255;
 
     --card: 1 32 48; /* #012030 */
-    --card-foreground: 218 253 186; /* #DAFDBA */
+    --card-foreground: 255 255 255;
 
     --popover: 1 32 48; /* #012030 */
-    --popover-foreground: 218 253 186; /* #DAFDBA */
+    --popover-foreground: 255 255 255;
 
     --primary: 69 196 176; /* #45C4B0 */
     --primary-foreground: 1 32 48; /* #012030 */
 
     --secondary: 19 103 138; /* #13678A */
-    --secondary-foreground: 218 253 186; /* #DAFDBA */
+    --secondary-foreground: 255 255 255;
 
-    --muted: 19 103 138; /* #13678A */
-    --muted-foreground: 154 235 163; /* #9AEBA3 */
+    --muted: 30 41 59;
+    --muted-foreground: 148 163 184;
 
     --accent: 69 196 176; /* #45C4B0 */
     --accent-foreground: 1 32 48; /* #012030 */
 
-    --destructive: 220 38 38;
-    --destructive-foreground: 218 253 186; /* #DAFDBA */
+    --destructive: 239 68 68;
+    --destructive-foreground: 255 255 255;
 
-    --border: 19 103 138; /* #13678A */
-    --input: 19 103 138; /* #13678A */
+    --border: 30 41 59;
+    --input: 30 41 59;
     --ring: 69 196 176; /* #45C4B0 */
 
     --sidebar-background: 1 32 48; /* #012030 */
-    --sidebar-foreground: 218 253 186; /* #DAFDBA */
+    --sidebar-foreground: 255 255 255;
     --sidebar-primary: 69 196 176; /* #45C4B0 */
     --sidebar-primary-foreground: 1 32 48; /* #012030 */
-    --sidebar-accent: 19 103 138; /* #13678A */
-    --sidebar-accent-foreground: 154 235 163; /* #9AEBA3 */
-    --sidebar-border: 19 103 138; /* #13678A */
+    --sidebar-accent: 30 41 59;
+    --sidebar-accent-foreground: 255 255 255;
+    --sidebar-border: 30 41 59;
     --sidebar-ring: 69 196 176; /* #45C4B0 */
   }
 }
