@@ -26,7 +26,7 @@ export const useSensorData = () => {
   const generateNotifications = (data: SensorData, prediction: MLPrediction): Notification[] => {
     const newNotifications: Notification[] = [];
     
-    // Ajustados os limites para notificações com base nas variações maiores
+    // Verificação de temperatura do processo
     if (data.processTemperature > 309.0) {
       newNotifications.push({
         id: `temp-${Date.now()}`,
@@ -38,9 +38,10 @@ export const useSensorData = () => {
       });
     }
 
+    // Verificação de torque alto
     if (data.torque > 55) {
       newNotifications.push({
-        id: `torque-${Date.now()}`,
+        id: `torque-high-${Date.now()}`,
         type: data.torque > 60 ? 'critical' : 'warning',
         title: 'Sobrecarga Mecânica',
         message: `Torque de ${data.torque.toFixed(1)}Nm detectado. Possível sobrecarga do sistema`,
@@ -49,6 +50,19 @@ export const useSensorData = () => {
       });
     }
 
+    // NOVA: Verificação de torque baixo
+    if (data.torque < 15) {
+      newNotifications.push({
+        id: `torque-low-${Date.now()}`,
+        type: data.torque < 8 ? 'critical' : 'warning',
+        title: 'Torque Baixo Detectado',
+        message: `Torque de ${data.torque.toFixed(1)}Nm está muito baixo. Possível problema de acoplamento ou carga`,
+        timestamp: 'Agora',
+        sensor: 'Sensor de Torque'
+      });
+    }
+
+    // Verificação de velocidade excessiva
     if (data.rotationalSpeed > 2000) {
       newNotifications.push({
         id: `speed-${Date.now()}`,
@@ -60,7 +74,8 @@ export const useSensorData = () => {
       });
     }
 
-    if (data.rotationalSpeed > 2000 && data.torque < 10) {
+    // MELHORADA: Verificação de desacoplamento (mais sensível)
+    if (data.rotationalSpeed > 1800 && data.torque < 12) {
       newNotifications.push({
         id: `decouple-${Date.now()}`,
         type: 'critical',
@@ -71,6 +86,19 @@ export const useSensorData = () => {
       });
     }
 
+    // NOVA: Verificação de velocidade baixa com torque normal (possível travamento)
+    if (data.rotationalSpeed < 1200 && data.torque > 40) {
+      newNotifications.push({
+        id: `blockage-${Date.now()}`,
+        type: 'critical',
+        title: 'Possível Travamento',
+        message: `Baixa velocidade (${data.rotationalSpeed}rpm) com alto torque (${data.torque.toFixed(1)}Nm) indica possível travamento`,
+        timestamp: 'Agora',
+        sensor: 'Sistema de Monitoramento'
+      });
+    }
+
+    // Notificação do modelo preditivo
     if (prediction.status === 'warning' && newNotifications.length === 0) {
       newNotifications.push({
         id: `ml-warning-${Date.now()}`,
@@ -88,51 +116,53 @@ export const useSensorData = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setSensorData(prev => {
-        // Aumento significativo das variações (25-50%)
         // Valores base para condições normais
         const baseAirTemp = 298.1;
         const baseProcessTemp = 308.5;
         const baseSpeed = 1400; 
         const baseTorque = 35;
         
-        // Variações mais amplas para condições normais (25-50%)
-        let newAirTemp = baseAirTemp + (Math.random() * 1.5); // ~0.5% variação
-        let newProcessTemp = baseProcessTemp + (Math.random() * 2.0); // ~0.65% variação
-        let newSpeed = baseSpeed + (Math.random() * 600); // ~43% variação
-        let newTorque = baseTorque + (Math.random() * 17.5); // ~50% variação
+        // Variações para condições normais
+        let newAirTemp = baseAirTemp + (Math.random() * 1.5);
+        let newProcessTemp = baseProcessTemp + (Math.random() * 2.0);
+        let newSpeed = baseSpeed + (Math.random() * 600);
+        let newTorque = baseTorque + (Math.random() * 17.5);
         
-        // 15% chance de anomalia (aumentado de 8%)
+        // 15% chance de anomalia
         const hasAnomaly = Math.random() < 0.15;
         
         if (hasAnomaly) {
-          // Simular casos de falha com variações ainda mais extremas
           const anomalyType = Math.random();
-          if (anomalyType < 0.5) {
-            // Caso 1: Alta velocidade com baixo torque
-            newSpeed = 2500 + (Math.random() * 750); // 2500-3250 (+30% do anterior)
-            newTorque = 3 + (Math.random() * 5); // 3-8
+          if (anomalyType < 0.3) {
+            // Caso 1: Alta velocidade com baixo torque (desacoplamento)
+            newSpeed = 2500 + (Math.random() * 750);
+            newTorque = 3 + (Math.random() * 5);
+          } else if (anomalyType < 0.6) {
+            // Caso 2: Alto torque (sobrecarga)
+            newTorque = 60 + (Math.random() * 15);
+            newSpeed = 1300 + (Math.random() * 200);
           } else {
-            // Caso 2: Alto torque
-            newTorque = 60 + (Math.random() * 15); // 60-75 (+25% do anterior)
-            newSpeed = 1300 + (Math.random() * 200); // 1300-1500
+            // Caso 3: Torque muito baixo (problema de acoplamento/carga)
+            newTorque = 2 + (Math.random() * 8);
+            newSpeed = 1200 + (Math.random() * 400);
           }
           
-          // Ocasionalmente adicionar anomalia de temperatura (25% das anomalias)
+          // Ocasionalmente adicionar anomalia de temperatura
           if (Math.random() < 0.25) {
-            newProcessTemp = 310 + (Math.random() * 1.5); // 310-311.5K (temperatura crítica)
+            newProcessTemp = 310 + (Math.random() * 1.5);
           }
         }
 
         return {
           ...prev,
-          airTemperature: Math.max(296.5, Math.min(301.5, newAirTemp)), // Ampliado range
-          processTemperature: Math.max(306.5, Math.min(312, newProcessTemp)), // Ampliado range
-          rotationalSpeed: Math.max(1200, Math.min(3300, newSpeed)), // Ampliado range
-          torque: Math.max(2, Math.min(75, newTorque)), // Ampliado range
+          airTemperature: Math.max(296.5, Math.min(301.5, newAirTemp)),
+          processTemperature: Math.max(306.5, Math.min(312, newProcessTemp)),
+          rotationalSpeed: Math.max(1200, Math.min(3300, newSpeed)),
+          torque: Math.max(2, Math.min(75, newTorque)),
           machineStatus: 'healthy' // Will be updated after ML prediction
         };
       });
-    }, 30000); // 30 segundos
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);
@@ -143,48 +173,55 @@ export const useSensorData = () => {
       let riskScore = 0;
       const factors: string[] = [];
 
-      // Análise baseada nos dados com pesos ajustados
-      // Temperatura
+      // Análise de temperatura
       if (sensorData.processTemperature > 309.0) {
-        // Aumentado o peso da temperatura
         riskScore += sensorData.processTemperature > 309.8 ? 0.45 : 0.30;
         factors.push('Temperatura elevada');
       }
       
-      // Torque
+      // Análise de torque alto
       if (sensorData.torque > 55) {
-        // Aumentado o peso do torque
         riskScore += sensorData.torque > 65 ? 0.50 : 0.35;
         factors.push('Sobrecarga mecânica');
       }
+
+      // NOVA: Análise de torque baixo
+      if (sensorData.torque < 15) {
+        riskScore += sensorData.torque < 8 ? 0.40 : 0.25;
+        factors.push('Torque insuficiente');
+      }
       
-      // Velocidade
+      // Análise de velocidade
       if (sensorData.rotationalSpeed > 2000) {
-        // Aumentado o peso da velocidade
         riskScore += sensorData.rotationalSpeed > 2800 ? 0.55 : 0.40;
         factors.push('Velocidade excessiva');
       }
 
-      // Combinação crítica: alta velocidade com baixo torque
-      if (sensorData.torque < 10 && sensorData.rotationalSpeed > 2000) {
-        // Aumentado o peso desta condição
+      // MELHORADA: Combinação crítica - desacoplamento (mais sensível)
+      if (sensorData.torque < 12 && sensorData.rotationalSpeed > 1800) {
         riskScore += 0.45;
         factors.push('Desacoplamento detectado');
       }
 
-      // Pequenas variações para valores normais, mais amplas que antes
+      // NOVA: Combinação crítica - possível travamento
+      if (sensorData.rotationalSpeed < 1200 && sensorData.torque > 40) {
+        riskScore += 0.40;
+        factors.push('Possível travamento');
+      }
+
+      // Pequenas variações para valores normais
       if (riskScore === 0) {
-        riskScore = Math.random() * 0.25; // 0-25% para casos normais
+        riskScore = Math.random() * 0.25;
       }
 
       // Garantir que o riskScore esteja entre 0 e 1
       riskScore = Math.max(0, Math.min(1, riskScore));
 
-      // Status ajustado para ser mais sensível a variações
+      // Status baseado no risco
       let status: 'healthy' | 'warning' | 'critical' = 'healthy';
-      if (riskScore > 0.60) { // Reduzido de 0.65
+      if (riskScore > 0.50) {
         status = 'critical';
-      } else if (riskScore > 0.25) { // Reduzido de 0.30
+      } else if (riskScore > 0.20) {
         status = 'warning';
       }
 
@@ -196,13 +233,13 @@ export const useSensorData = () => {
 
       setMlPrediction(newPrediction);
 
-      // Atualizar o status da máquina baseado na probabilidade de falha
+      // Atualizar o status da máquina
       setSensorData(prev => ({
         ...prev,
         machineStatus: status
       }));
       
-      // Gerar notificações baseadas nos dados e predição
+      // Gerar notificações
       const newNotifications = generateNotifications(sensorData, newPrediction);
       setNotifications(newNotifications);
     };

@@ -44,7 +44,11 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
       value: `${data.torque.toFixed(1)}`,
       unit: 'Nm',
       icon: Wrench,
-      status: data.torque > 60 ? 'critical' : data.torque > 50 ? 'warning' : 'healthy',
+      // MELHORADA: Detecção de torque baixo e alto
+      status: data.torque > 60 ? 'critical' : 
+              data.torque > 50 ? 'warning' : 
+              data.torque < 8 ? 'critical' :
+              data.torque < 15 ? 'warning' : 'healthy',
       change: Math.random() > 0.5 ? '+1.8%' : '-0.8%',
       trend: Math.random() > 0.5 ? 'up' : 'down',
       color: 'tertiary'
