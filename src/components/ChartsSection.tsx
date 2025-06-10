@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { SensorData } from '@/types/sensor';
@@ -15,7 +14,6 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
     let baseValue = currentValue;
     
     for (let i = 23; i >= 0; i--) {
-      // Apply trend
       if (trend === 'increasing') {
         baseValue = currentValue - (i * 0.1);
       } else if (trend === 'decreasing') {
@@ -39,7 +37,7 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
   const speedData = generateHistoricalData(data.rotationalSpeed, 'speed', 'stable');
   const wearData = generateHistoricalData(data.toolWear, 'wear', 'increasing');
 
-  const customTooltip = (active: any, payload: any, label: any) => {
+  const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-slate-200">
@@ -104,7 +102,7 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                   axisLine={false}
                   domain={['dataMin - 5', 'dataMax + 5']}
                 />
-                <Tooltip content={customTooltip} />
+                <Tooltip content={<CustomTooltip />} />
                 <Area 
                   type="monotone" 
                   dataKey="temperature" 
@@ -154,7 +152,7 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                   axisLine={false}
                   domain={['dataMin - 2', 'dataMax + 2']}
                 />
-                <Tooltip content={customTooltip} />
+                <Tooltip content={<CustomTooltip />} />
                 <Line 
                   type="monotone" 
                   dataKey="torque" 
@@ -208,7 +206,7 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                   axisLine={false}
                   domain={['dataMin - 20', 'dataMax + 20']}
                 />
-                <Tooltip content={customTooltip} />
+                <Tooltip content={<CustomTooltip />} />
                 <Area 
                   type="monotone" 
                   dataKey="speed" 
@@ -258,7 +256,7 @@ export const ChartsSection = ({ data }: ChartsSectionProps) => {
                   axisLine={false}
                   domain={[0, 'dataMax + 10']}
                 />
-                <Tooltip content={customTooltip} />
+                <Tooltip content={<CustomTooltip />} />
                 <Line 
                   type="monotone" 
                   dataKey="wear" 
