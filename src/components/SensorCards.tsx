@@ -1,4 +1,3 @@
-
 import { Thermometer, Gauge, Wrench, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +17,7 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
       status: data.airTemperature > 299.5 ? 'warning' : 'healthy',
       change: Math.random() > 0.5 ? '+0.3%' : '-0.1%',
       trend: Math.random() > 0.5 ? 'up' : 'down',
-      color: 'blue'
+      color: 'primary'
     },
     {
       title: 'Temperatura Processo',
@@ -28,7 +27,7 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
       status: data.processTemperature > 309.5 ? 'critical' : data.processTemperature > 309.0 ? 'warning' : 'healthy',
       change: Math.random() > 0.5 ? '+0.2%' : '-0.1%',
       trend: Math.random() > 0.5 ? 'up' : 'down',
-      color: 'orange'
+      color: 'secondary'
     },
     {
       title: 'Velocidade Rotacional',
@@ -38,7 +37,7 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
       status: data.rotationalSpeed > 2000 ? 'critical' : data.rotationalSpeed > 1600 ? 'warning' : 'healthy',
       change: Math.random() > 0.5 ? '-0.5%' : '+1.2%',
       trend: Math.random() > 0.5 ? 'up' : 'down',
-      color: 'emerald'
+      color: 'accent'
     },
     {
       title: 'Torque',
@@ -48,17 +47,17 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
       status: data.torque > 60 ? 'critical' : data.torque > 50 ? 'warning' : 'healthy',
       change: Math.random() > 0.5 ? '+1.8%' : '-0.8%',
       trend: Math.random() > 0.5 ? 'up' : 'down',
-      color: 'violet'
+      color: 'tertiary'
     },
     {
-      title: 'Status Máquina',
-      value: data.machineFailure ? 'Falha' : 'OK',
+      title: 'Status da Máquina',
+      value: data.machineFailure ? 'Não Healthy' : 'Healthy',
       unit: '',
       icon: AlertTriangle,
       status: data.machineFailure ? 'critical' : 'healthy',
       change: '',
       trend: data.machineFailure ? 'down' : 'up',
-      color: data.machineFailure ? 'red' : 'emerald'
+      color: data.machineFailure ? 'critical' : 'accent'
     }
   ];
 
@@ -93,13 +92,13 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
 
   const getColorConfig = (color: string) => {
     const configs: Record<string, string> = {
-      blue: 'from-blue-50/70 via-white to-blue-50/30 border-blue-200/50',
-      orange: 'from-orange-50/70 via-white to-orange-50/30 border-orange-200/50',
-      emerald: 'from-emerald-50/70 via-white to-emerald-50/30 border-emerald-200/50',
-      violet: 'from-violet-50/70 via-white to-violet-50/30 border-violet-200/50',
-      red: 'from-red-50/70 via-white to-red-50/30 border-red-200/50'
+      primary: 'from-blue-50/70 via-white to-blue-50/30 border-blue-200/50',
+      secondary: 'from-orange-50/70 via-white to-orange-50/30 border-orange-200/50',
+      accent: 'from-emerald-50/70 via-white to-emerald-50/30 border-emerald-200/50',
+      tertiary: 'from-violet-50/70 via-white to-violet-50/30 border-violet-200/50',
+      critical: 'from-red-50/70 via-white to-red-50/30 border-red-200/50'
     };
-    return configs[color] || configs.emerald;
+    return configs[color] || configs.accent;
   };
 
   return (

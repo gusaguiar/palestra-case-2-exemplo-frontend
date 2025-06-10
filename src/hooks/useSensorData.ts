@@ -15,37 +15,74 @@ export const useSensorData = () => {
   });
 
   const [mlPrediction, setMlPrediction] = useState<MLPrediction>({
-    probability: 0.15,
+    probability: 0.12,
     status: 'healthy',
     factors: []
   });
 
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: '1',
-      type: 'warning',
-      title: 'Variação Térmica Detectada',
-      message: 'Temperatura do processo apresentou oscilação de 2.1K nas últimas 2 horas',
-      timestamp: 'Há 12 minutos',
-      sensor: 'Sensor Térmico PT-100'
-    },
-    {
-      id: '2',
-      type: 'info',
-      title: 'Manutenção Preventiva',
-      message: 'Calibração do encoder rotacional programada para amanhã às 14:00',
-      timestamp: 'Há 45 minutos',
-      sensor: 'Encoder Rotacional'
-    },
-    {
-      id: '3',
-      type: 'critical',
-      title: 'Anomalia Detectada',
-      message: 'Torque registrou pico de 65.7 Nm, indicando possível sobrecarga',
-      timestamp: 'Há 1 hora',
-      sensor: 'Sensor de Torque'
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  // Função para gerar notificações baseadas nos dados atuais
+  const generateNotifications = (data: SensorData, prediction: MLPrediction): Notification[] => {
+    const newNotifications: Notification[] = [];
+    
+    if (data.processTemperature > 309.0) {
+      newNotifications.push({
+        id: `temp-${Date.now()}`,
+        type: data.processTemperature > 309.5 ? 'critical' : 'warning',
+        title: 'Temperatura Elevada Detectada',
+        message: `Temperatura do processo em ${data.processTemperature.toFixed(1)}K está acima do limite operacional de 309.0K`,
+        timestamp: 'Agora',
+        sensor: 'Sensor Térmico PT-100'
+      });
     }
-  ]);
+
+    if (data.torque > 55) {
+      newNotifications.push({
+        id: `torque-${Date.now()}`,
+        type: data.torque > 60 ? 'critical' : 'warning',
+        title: 'Sobrecarga Mecânica',
+        message: `Torque de ${data.torque.toFixed(1)}Nm detectado. Possível sobrecarga do sistema`,
+        timestamp: 'Agora',
+        sensor: 'Sensor de Torque'
+      });
+    }
+
+    if (data.rotationalSpeed > 2000) {
+      newNotifications.push({
+        id: `speed-${Date.now()}`,
+        type: 'critical',
+        title: 'Velocidade Excessiva',
+        message: `Velocidade rotacional de ${data.rotationalSpeed}rpm está muito alta. Risco de falha mecânica`,
+        timestamp: 'Agora',
+        sensor: 'Encoder Rotacional'
+      });
+    }
+
+    if (data.rotationalSpeed > 2000 && data.torque < 10) {
+      newNotifications.push({
+        id: `decouple-${Date.now()}`,
+        type: 'critical',
+        title: 'Desacoplamento Detectado',
+        message: `Alta velocidade (${data.rotationalSpeed}rpm) com baixo torque (${data.torque.toFixed(1)}Nm) indica possível desacoplamento`,
+        timestamp: 'Agora',
+        sensor: 'Sistema de Acoplamento'
+      });
+    }
+
+    if (prediction.status === 'warning' && newNotifications.length === 0) {
+      newNotifications.push({
+        id: `ml-warning-${Date.now()}`,
+        type: 'info',
+        title: 'Modelo Preditivo - Atenção',
+        message: `Sistema de ML detectou ${(prediction.probability * 100).toFixed(1)}% de probabilidade de falha`,
+        timestamp: 'Agora',
+        sensor: 'Sistema de ML'
+      });
+    }
+
+    return newNotifications;
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -84,55 +121,67 @@ export const useSensorData = () => {
           machineFailure
         };
       });
-
-      setMlPrediction(prev => {
-        setSensorData(currentData => {
-          let riskScore = 0;
-          const factors: string[] = [];
-
-          // Análise baseada nos dados reais
-          if (currentData.processTemperature > 309.0) {
-            riskScore += 0.25;
-            factors.push('Temperatura elevada');
-          }
-          
-          if (currentData.torque > 55) {
-            riskScore += 0.40;
-            factors.push('Sobrecarga mecânica');
-          }
-          
-          if (currentData.rotationalSpeed > 2000) {
-            riskScore += 0.35;
-            factors.push('Velocidade excessiva');
-          }
-
-          if (currentData.torque < 10 && currentData.rotationalSpeed > 2000) {
-            riskScore += 0.30;
-            factors.push('Desacoplamento detectado');
-          }
-
-          riskScore = Math.max(0, Math.min(1, riskScore));
-
-          let status: 'healthy' | 'warning' | 'critical' = 'healthy';
-          if (riskScore > 0.65) {
-            status = 'critical';
-          } else if (riskScore > 0.35) {
-            status = 'warning';
-          }
-
-          return currentData;
-        });
-
-        return {
-          probability: Math.random() > 0.7 ? Math.random() * 0.3 : Math.random() * 0.15,
-          status: Math.random() > 0.85 ? 'warning' : 'healthy',
-          factors: Math.random() > 0.6 ? ['Oscilação térmica'] : []
-        };
-      });
     }, 3500);
 
     return () => clearInterval(interval);
   }, []);
+
+  // Atualizar predição ML baseada nos dados atuais
+  useEffect(() => {
+    const updatePrediction = () => {
+      let riskScore = 0;
+      const factors: string[] = [];
+
+      // Análise baseada nos dados reais
+      if (sensorData.processTemperature > 309.0) {
+        riskScore += sensorData.processTemperature > 309.5 ? 0.35 : 0.20;
+        factors.push('Temperatura elevada');
+      }
+      
+      if (sensorData.torque > 55) {
+        riskScore += sensorData.torque > 60 ? 0.45 : 0.25;
+        factors.push('Sobrecarga mecânica');
+      }
+      
+      if (sensorData.rotationalSpeed > 2000) {
+        riskScore += 0.40;
+        factors.push('Velocidade excessiva');
+      }
+
+      if (sensorData.torque < 10 && sensorData.rotationalSpeed > 2000) {
+        riskScore += 0.35;
+        factors.push('Desacoplamento detectado');
+      }
+
+      // Pequenas variações para valores normais
+      if (riskScore === 0) {
+        riskScore = Math.random() * 0.15; // 0-15% para casos normais
+      }
+
+      riskScore = Math.max(0, Math.min(1, riskScore));
+
+      let status: 'healthy' | 'warning' | 'critical' = 'healthy';
+      if (riskScore > 0.65) {
+        status = 'critical';
+      } else if (riskScore > 0.30) {
+        status = 'warning';
+      }
+
+      const newPrediction = {
+        probability: riskScore,
+        status,
+        factors
+      };
+
+      setMlPrediction(newPrediction);
+      
+      // Gerar notificações baseadas nos dados e predição
+      const newNotifications = generateNotifications(sensorData, newPrediction);
+      setNotifications(newNotifications);
+    };
+
+    updatePrediction();
+  }, [sensorData]);
 
   return {
     sensorData,
