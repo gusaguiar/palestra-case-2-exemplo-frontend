@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { SensorData, MLPrediction, Notification } from '@/types/sensor';
 
@@ -11,7 +10,7 @@ export const useSensorData = () => {
     processTemperature: 308.7,
     rotationalSpeed: 1408,
     torque: 46.3,
-    machineFailure: false
+    machineStatus: 'healthy'
   });
 
   const [mlPrediction, setMlPrediction] = useState<MLPrediction>({
@@ -54,7 +53,7 @@ export const useSensorData = () => {
         id: `speed-${Date.now()}`,
         type: 'critical',
         title: 'Velocidade Excessiva',
-        message: `Velocidade rotacional de ${data.rotationalSpeed}rpm está muito alta. Risco de falha mecânica`,
+        message: `Velocidade rotacional de ${data.rotationalSpeed}rpm está muito alta. Risco de falha mecânica',
         timestamp: 'Agora',
         sensor: 'Encoder Rotacional'
       });
@@ -65,7 +64,7 @@ export const useSensorData = () => {
         id: `decouple-${Date.now()}`,
         type: 'critical',
         title: 'Desacoplamento Detectado',
-        message: `Alta velocidade (${data.rotationalSpeed}rpm) com baixo torque (${data.torque.toFixed(1)}Nm) indica possível desacoplamento`,
+        message: `Alta velocidade (${data.rotationalSpeed}rpm) com baixo torque (${data.torque.toFixed(1)}Nm) indica possível desacoplamento',
         timestamp: 'Agora',
         sensor: 'Sistema de Acoplamento'
       });
@@ -76,7 +75,7 @@ export const useSensorData = () => {
         id: `ml-warning-${Date.now()}`,
         type: 'info',
         title: 'Modelo Preditivo - Atenção',
-        message: `Sistema de ML detectou ${(prediction.probability * 100).toFixed(1)}% de probabilidade de falha`,
+        message: `Sistema de ML detectou ${(prediction.probability * 100).toFixed(1)}% de probabilidade de falha',
         timestamp: 'Agora',
         sensor: 'Sistema de ML'
       });
@@ -123,19 +122,13 @@ export const useSensorData = () => {
           }
         }
 
-        // Condições de falha ajustadas para os novos ranges
-        const machineFailure = 
-          newTorque > 65 || // Reduzido de 70 para detectar falhas mais cedo
-          newSpeed > 2800 || // Reduzido de 3000 para detectar falhas mais cedo
-          newProcessTemp > 309.8; // Reduzido de 310 para detectar falhas mais cedo
-
         return {
           ...prev,
           airTemperature: Math.max(296.5, Math.min(301.5, newAirTemp)), // Ampliado range
           processTemperature: Math.max(306.5, Math.min(312, newProcessTemp)), // Ampliado range
           rotationalSpeed: Math.max(1200, Math.min(3300, newSpeed)), // Ampliado range
           torque: Math.max(2, Math.min(75, newTorque)), // Ampliado range
-          machineFailure
+          machineStatus: 'healthy' // Will be updated after ML prediction
         };
       });
     }, 30000); // 30 segundos
@@ -201,6 +194,12 @@ export const useSensorData = () => {
       };
 
       setMlPrediction(newPrediction);
+
+      // Atualizar o status da máquina baseado na probabilidade de falha
+      setSensorData(prev => ({
+        ...prev,
+        machineStatus: status
+      }));
       
       // Gerar notificações baseadas nos dados e predição
       const newNotifications = generateNotifications(sensorData, newPrediction);
@@ -208,7 +207,7 @@ export const useSensorData = () => {
     };
 
     updatePrediction();
-  }, [sensorData]);
+  }, [sensorData.airTemperature, sensorData.processTemperature, sensorData.rotationalSpeed, sensorData.torque]);
 
   return {
     sensorData,

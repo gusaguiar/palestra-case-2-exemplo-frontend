@@ -1,4 +1,4 @@
-import { Thermometer, Gauge, Wrench, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
+import { Thermometer, Gauge, Wrench, Heart, TrendingUp, TrendingDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SensorData } from '@/types/sensor';
@@ -51,13 +51,15 @@ export const SensorCards = ({ data }: SensorCardsProps) => {
     },
     {
       title: 'Status da Máquina',
-      value: data.machineFailure ? 'Não Healthy' : 'Healthy',
+      value: data.machineStatus === 'healthy' ? 'Saudável' : 
+             data.machineStatus === 'warning' ? 'Atenção' : 'Crítico',
       unit: '',
-      icon: AlertTriangle,
-      status: data.machineFailure ? 'critical' : 'healthy',
+      icon: Heart,
+      status: data.machineStatus,
       change: '',
-      trend: data.machineFailure ? 'down' : 'up',
-      color: data.machineFailure ? 'critical' : 'accent'
+      trend: data.machineStatus === 'critical' ? 'down' : data.machineStatus === 'warning' ? 'down' : 'up',
+      color: data.machineStatus === 'critical' ? 'critical' : 
+             data.machineStatus === 'warning' ? 'secondary' : 'accent'
     }
   ];
 

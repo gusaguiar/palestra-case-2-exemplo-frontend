@@ -7,7 +7,7 @@ export interface SensorData {
   processTemperature: number; // [K]
   rotationalSpeed: number; // [rpm]
   torque: number; // [Nm]
-  machineFailure: boolean;
+  machineStatus: 'healthy' | 'warning' | 'critical'; // Changed from boolean machineFailure
 }
 
 export interface MLPrediction {
