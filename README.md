@@ -1,73 +1,75 @@
-# Welcome to your Lovable project
+# Exemplo de Frontend
 
-## Project info
+Um dashboard moderno para monitoramento de sensores industriais com análise preditiva usando Machine Learning.
 
-**URL**: https://lovable.dev/projects/9e49bc4d-a49b-4a9a-b152-c5cb1f094fd2
+## O que é este projeto?
 
-## How can I edit this code?
+Este é um sistema de monitoramento industrial que simula dados de sensores IoT em tempo real, incluindo:
 
-There are several ways of editing your application.
+- **Monitoramento de Sensores**: Temperatura, velocidade rotacional, torque
+- **Análise Preditiva**: Sistema de ML que detecta possíveis falhas
+- **Alertas Inteligentes**: Notificações automáticas para anomalias
+- **Dashboard Visual**: Gráficos e métricas em tempo real
 
-**Use Lovable**
+Os dados são atualizados automaticamente a cada 15 segundos.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/9e49bc4d-a49b-4a9a-b152-c5cb1f094fd2) and start prompting.
+## Como executar o projeto
 
-Changes made via Lovable will be committed automatically to this repo.
+### Pré-requisitos
+- Node.js (versão 16 ou superior)
+- npm, yarn ou bun
 
-**Use your preferred IDE**
+### Passos para executar
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. **Instale as dependências**:
+   ```bash
+   npm install
+   ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+2. **Execute o projeto**:
+   ```bash
+   npm run dev
+   ```
 
-Follow these steps:
+3. **Acesse no navegador**:
+   - Abra `http://localhost:5173`
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Pronto! O dashboard estará funcionando com dados simulados.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## Tecnologias utilizadas
 
-# Step 3: Install the necessary dependencies.
-npm i
+- **React + TypeScript** - Interface principal
+- **Vite** - Build e servidor de desenvolvimento
+- **Tailwind CSS** - Estilização
+- **shadcn/ui** - Componentes de interface
+- **Recharts** - Gráficos e visualizações
+- **React Query** - Gerenciamento de dados
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## Funcionalidades principais
 
-**Edit a file directly in GitHub**
+### Monitoramento em Tempo Real
+- Temperatura do ar e processo
+- Velocidade rotacional (RPM)
+- Torque mecânico
+- Status da máquina
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Sistema de Alertas
+- Detecção de temperatura elevada
+- Sobrecarga mecânica
+- Desacoplamento de sistema
+- Possível travamento
 
-**Use GitHub Codespaces**
+### Análise Preditiva
+- Modelo de ML simulado
+- Probabilidade de falha
+- Fatores de risco identificados
+- Status automático (saudável/atenção/crítico)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Scripts disponíveis
 
-## What technologies are used for this project?
+- `npm run dev` - Executa em modo desenvolvimento
+- `npm run build` - Gera build de produção
+- `npm run preview` - Visualiza o build localmente
+- `npm run lint` - Verifica código
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/9e49bc4d-a49b-4a9a-b152-c5cb1f094fd2) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Estrutura do projeto

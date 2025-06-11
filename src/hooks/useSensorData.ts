@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { SensorData, MLPrediction, Notification } from '@/types/sensor';
 
@@ -162,7 +161,7 @@ export const useSensorData = () => {
           machineStatus: 'healthy' // Will be updated after ML prediction
         };
       });
-    }, 30000);
+    }, 15000);
 
     return () => clearInterval(interval);
   }, []);
